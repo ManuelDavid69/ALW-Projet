@@ -1,0 +1,26 @@
+# Sujet et notes de travail locales
+3IRC ALW 1 - sujet*.pdf
+sujet.txt
+
+# Systèmes d'exploitation
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Éditeurs
+.idea/
+.vscode/
+*.swp
+*~
+
+# Journaux et caches
+*.log
+.phpunit.result.cache
+src/site/Twig/cache/
+src/webservice/Twig/cache/
+src/site/var/
+src/webservice/var/
+
+# Composer (utilisé uniquement pour Workerman)
+/vendor/
+composer.phar
