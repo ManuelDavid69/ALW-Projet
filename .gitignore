@@ -21,6 +21,13 @@ src/webservice/Twig/cache/
 src/site/var/
 src/webservice/var/
 
+# Données de jeu générées à l'exécution
+src/site/Data/Saves/*.json
+src/Data/Saves/*.json
+src/Data/Events/*.json
+src/Data/State/*.json
+
 # Composer (utilisé uniquement pour Workerman)
 /vendor/
 composer.phar
+ws/vendor/
