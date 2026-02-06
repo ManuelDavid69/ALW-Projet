@@ -1,0 +1,426 @@
+/*
+    Feuille de style commune au site « La Ferme ».
+    Palette :
+      bleu clair   #0bbbef
+      bleu foncé   #0086b7
+      brun         #b35a1f
+      vert code    #4af626
+*/
+:root {
+    color-scheme: dark;
+    --bg: #2b2b2b;
+    --panel: #111;
+    --panel-soft: #1b1b1b;
+    --line: #0086b7;
+    --blue: #0bbbef;
+    --blue-dark: #0086b7;
+    --brown: #b35a1f;
+    --green: #4af626;
+    --muted: #a7b0b5;
+    --error: #b30000;
+    font-family: system-ui, sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--bg);
+    color: #e9f2f5;
+}
+
+body.page-dashboard {
+    background:
+        radial-gradient(1100px 500px at 15% -10%, #0d4a5e55, transparent 60%),
+        var(--bg);
+}
+
+a,
+a:visited {
+    color: var(--blue);
+}
+
+code,
+pre {
+    color: var(--green);
+    background-color: black;
+    font-weight: bold;
+    padding: .1em .3em;
+    border-radius: .3em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--blue);
+}
+
+/* ------------------------------------------------------------------ */
+/* Connexion                                                          */
+/* ------------------------------------------------------------------ */
+
+.loginForm {
+    background-color: black;
+    width: min(25em, 92vw);
+    border: .1em solid var(--blue-dark);
+    border-radius: .5em;
+    margin: 2em auto;
+    padding: 1em;
+}
+
+form h2 {
+    margin: 0 0 .5em;
+}
+
+form button {
+    margin: .5em 0 0;
+}
+
+input {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: .5em 0;
+    font-size: 1em;
+}
+
+button {
+    font-size: 1em;
+}
+
+.error {
+    border-radius: .2em;
+    background-color: darkred;
+    padding: 0 .5em;
+    font-style: italic;
+}
+
+.error::before {
+    content: "⚠ ";
+    font-weight: bold;
+}
+
+/* ------------------------------------------------------------------ */
+/* Tableau de bord                                                    */
+/* ------------------------------------------------------------------ */
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: .9rem 1.4rem;
+    background: #0b0b0bcc;
+    border-bottom: 1px solid #ffffff14;
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(8px);
+    z-index: 10;
+}
+
+.brand {
+    font-weight: 800;
+    letter-spacing: .02em;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.15rem;
+}
+
+.brand span {
+    color: var(--blue);
+}
+
+.topbar nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: .95rem;
+}
+
+.topbar nav a {
+    color: var(--muted);
+    text-decoration: none;
+}
+
+.topbar nav a:hover {
+    color: var(--blue);
+}
+
+main {
+    width: min(1180px, 94vw);
+    margin: 0 auto;
+    padding: 2rem 0 4rem;
+}
+
+.hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.6rem 1.8rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, #0d3b4a, #101010 70%);
+    border: 1px solid #ffffff17;
+    border-radius: 1rem;
+}
+
+.eyebrow {
+    margin: 0 0 .3rem;
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    font-size: .72rem;
+    color: var(--blue);
+    font-weight: 700;
+}
+
+.hero h1 {
+    margin: 0;
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+}
+
+.hero p.lede {
+    margin: .5rem 0 0;
+    color: var(--muted);
+    max-width: 46ch;
+}
+
+.stats {
+    display: flex;
+    gap: 1.6rem;
+    margin: 0;
+}
+
+.stats div {
+    text-align: right;
+}
+
+.stats dt {
+    color: var(--muted);
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.stats dd {
+    margin: .15rem 0 0;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.panel {
+    background: var(--panel);
+    border: 1px solid #ffffff12;
+    border-radius: 1rem;
+    padding: 1.3rem 1.4rem 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.panel > header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.panel h2 {
+    margin: 0;
+    font-size: 1.15rem;
+    letter-spacing: .02em;
+}
+
+.panel header .hint {
+    color: var(--muted);
+    font-size: .85rem;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: .9rem;
+}
+
+.product-card {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    padding: .9rem 1rem;
+    background: var(--panel-soft);
+    border: 1px solid #ffffff10;
+    border-radius: .8rem;
+}
+
+.product-card .icon {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    font-size: 1.5rem;
+    background: #000;
+    border-radius: .7rem;
+    border: 1px solid #ffffff12;
+}
+
+.product-card h3 {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.product-card p {
+    margin: .1rem 0 0;
+    color: var(--muted);
+    font-size: .8rem;
+}
+
+.product-card .stock {
+    margin-left: auto;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--green);
+    font-variant-numeric: tabular-nums;
+}
+
+.building-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 1rem;
+}
+
+.building-card {
+    display: flex;
+    flex-direction: column;
+    gap: .8rem;
+    padding: 1rem;
+    background: var(--panel-soft);
+    border: 1px solid #ffffff10;
+    border-radius: .9rem;
+}
+
+.building-card > header {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+}
+
+.building-card .icon {
+    display: grid;
+    place-items: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    font-size: 1.6rem;
+    background: #000;
+    border-radius: .7rem;
+    border: 1px solid #ffffff12;
+}
+
+.building-card h3 {
+    margin: 0;
+    font-size: 1.02rem;
+}
+
+.building-card header p {
+    margin: .1rem 0 0;
+    color: var(--muted);
+    font-size: .78rem;
+}
+
+.level-badge {
+    margin-left: auto;
+    padding: .25rem .55rem;
+    border-radius: 999px;
+    background: #0bbbef1a;
+    border: 1px solid #0bbbef55;
+    color: var(--blue);
+    font-size: .78rem;
+    white-space: nowrap;
+}
+
+.building-card .description {
+    margin: 0;
+    color: var(--muted);
+    font-size: .86rem;
+    min-height: 2.4em;
+}
+
+.production {
+    padding: .5rem .65rem;
+    border-left: 3px solid var(--brown);
+    background: #b35a1f12;
+    border-radius: .3rem;
+    font-size: .86rem;
+}
+
+.actions {
+    display: flex;
+    gap: .6rem;
+}
+
+button {
+    font-family: inherit;
+    font-size: .9rem;
+    padding: .5rem .9rem;
+    border-radius: .5rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+button.harvest {
+    background: var(--blue-dark);
+    color: #001b23;
+    font-weight: 700;
+}
+
+button.upgrade {
+    background: transparent;
+    color: var(--blue);
+    border-color: #0bbbef66;
+}
+
+button:hover {
+    filter: brightness(1.12);
+}
+
+button:disabled {
+    opacity: .45;
+    cursor: not-allowed;
+    filter: none;
+}
+
+.cost {
+    font-size: .82rem;
+    color: var(--muted);
+}
+
+.cost.affordable {
+    color: var(--green);
+}
+
+.cost.unaffordable {
+    color: #ff9c9c;
+}
+
+/* ------------------------------------------------------------------ */
+/* Page d'erreur                                                      */
+/* ------------------------------------------------------------------ */
+
+.error-box {
+    max-width: 34rem;
+    margin: 4rem auto;
+    padding: 1.4rem;
+    background: #1b1b1b;
+    border: 1px solid #ff6b6b55;
+    border-radius: .8rem;
+}
+
+.error-box h1 {
+    color: #ff9c9c;
+    font-size: 1.3rem;
+}

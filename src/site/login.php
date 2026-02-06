@@ -53,67 +53,7 @@ $isAuthenticated = $player !== null;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Connexion — La Ferme</title>
-    <style>
-        /*
-            Palette :
-            main blue #0bbbef
-            dark blue #0086b7
-            light blue #c7f8ff
-            brown #783300
-        */
-        :root {
-            color-scheme: dark;
-            background-color: #333;
-            font-family: sans;
-        }
-        a, a:visited {
-            color: #783300;
-        }
-        code, pre {
-            color: #4AF626;
-            background-color: black;
-            font-weight: bold;
-            padding: .1em .3em;
-            border-radius: .3em;
-        }
-        .loginForm {
-            background-color: black;
-            width: 25em;
-            border: .1em solid #0086b7;
-            border-radius: .5em;
-            margin: 2em auto;
-            padding: 1em;
-        }
-        h1, h2, h3, h4, h5, h6 {
-            color: #0bbbef;
-        }
-        form h2 {
-            margin: 0 0 .5em;
-        }
-        form button {
-            margin: .5em 0 0;
-        }
-        input {
-            display: block;
-            width: 100%;
-            box-sizing: border-box;
-            margin: .5em 0;
-            font-size: 1em;
-        }
-        button {
-            font-size: 1em;
-        }
-        .error {
-            border-radius: .2em;
-            background-color: darkred;
-            padding: 0 .5em;
-            font-style: italic;
-        }
-        .error::before {
-            content: "⚠ ";
-            font-weight: bold;
-        }
-    </style>
+    <link rel="stylesheet" href="/Public/style.css">
 </head>
 <body>
     <?php if ($isAuthenticated) { ?>
