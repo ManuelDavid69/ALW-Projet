@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 // La session est ouverte pour tous les visiteurs : elle sert à la fois à
 // mémoriser le joueur connecté et à conserver les messages d'erreur.
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    session_start();
+}
 
 require_once __DIR__ . '/Utils/User.php';
 require_once __DIR__ . '/Utils/UserRepository.php';
