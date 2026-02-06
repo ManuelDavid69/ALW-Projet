@@ -7,10 +7,37 @@ session_start();
 require_once __DIR__ . '/Utils/GameConfigRepository.php';
 require_once __DIR__ . '/Utils/SaveRepository.php';
 
+// Cette page est réservée aux joueurs authentifiés. Sans session valide, on
+// répond avec le code 401 (Unauthorized) plutôt que d'afficher la ferme.
+if (!isset($_SESSION['player']['login'])) {
+    http_response_code(401);
+    ?><!DOCTYPE html>
+    <html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Accès refusé — La Ferme</title>
+        <style>
+            body { background: #2b2b2b; color: #e9f2f5; font-family: system-ui, sans-serif; }
+            .error-box { max-width: 34rem; margin: 4rem auto; padding: 1.4rem; background: #1b1b1b; border: 1px solid #ff6b6b55; border-radius: .8rem; }
+            h1 { color: #ff9c9c; font-size: 1.3rem; }
+            a { color: #0bbbef; }
+        </style>
+    </head>
+    <body>
+        <div class="error-box">
+            <h1>401 — Authentification requise</h1>
+            <p>Vous devez être connecté pour consulter le tableau de bord de votre ferme.</p>
+            <p><a href="login.php">Se connecter</a></p>
+        </div>
+    </body>
+    </html><?php
+    exit;
+}
+
 $config = new GameConfigRepository(__DIR__ . '/Data/Config/game_config.json');
 $saves = new SaveRepository(__DIR__ . '/Data/Saves');
 
-$login = (string) ($_SESSION['player']['login'] ?? 'bean');
+$login = (string) $_SESSION['player']['login'];
 $products = $config->getProducts();
 $buildings = $config->getBuildings();
 $save = $saves->ensure($login, $config);
