@@ -25,7 +25,7 @@ if (!isset($_SESSION['player']['login'])) {
         <div class="error-box">
             <h1>401 — Authentification requise</h1>
             <p>Vous devez être connecté pour consulter le tableau de bord de votre ferme.</p>
-            <p><a href="login.php">Se connecter</a></p>
+            <p><a href="sep.php?page=login">Se connecter</a></p>
         </div>
     </body>
     </html><?php
@@ -55,9 +55,9 @@ foreach ($save['buildings'] as $buildingState) {
 </head>
 <body class="page-dashboard">
     <header class="topbar">
-        <a class="brand" href="dashboard.php">🌾 La <span>Ferme</span></a>
+        <a class="brand" href="sep.php?page=dashboard">🌾 La <span>Ferme</span></a>
         <nav>
-            <a href="dashboard.php">Tableau de bord</a>
+            <a href="sep.php?page=dashboard">Tableau de bord</a>
             <span>Connecté : <?php echo htmlspecialchars($login, ENT_QUOTES, 'UTF-8'); ?></span>
         </nav>
     </header>

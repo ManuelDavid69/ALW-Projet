@@ -63,7 +63,7 @@ $isAuthenticated = $player !== null;
             <h2>Bienvenue, <?php echo htmlspecialchars($player['login'], ENT_QUOTES, 'UTF-8'); ?> !</h2>
             <p>Votre ferme vous attend. La session est ouverte : vous pouvez
                maintenant rejoindre le tableau de bord.</p>
-            <p><a href="dashboard.php">Accéder au tableau de bord</a></p>
+            <p><a href="sep.php?page=dashboard">Accéder au tableau de bord</a></p>
         </section>
     <?php } else { ?>
         <form action="" method="POST" class="loginForm">
