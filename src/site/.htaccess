@@ -1,0 +1,21 @@
+<IfModule mod_rewrite.c>
+# will tell the App that mod_rewrite is enabled and .htacces was taken into account
+SetEnv HTTP_MOD_REWRITE On
+
+# activate URL Rewriting
+RewriteEngine On
+
+# redirect access for application & framework files to frontend
+RewriteRule ^App/           index.php [QSA,L]
+RewriteRule ^Data/          index.php [QSA,L]
+RewriteRule ^Framework/     index.php [QSA,L]
+# but not for Public directory!
+
+# authorize direct access if we get an existing filename
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# redirect remaining URLs to the index
+RewriteRule ^(.*)$          index.php?url=/$1 [B,QSA,L]
+
+</IfModule>
