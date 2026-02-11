@@ -8,13 +8,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-require_once __DIR__ . '/Utils/User.php';
-require_once __DIR__ . '/Utils/UserRepository.php';
-require_once __DIR__ . '/Utils/GameConfigRepository.php';
-require_once __DIR__ . '/Utils/SaveRepository.php';
+require_once __DIR__ . '/Framework/autoloader.php';
 
 $error = null;
-$repo = new UserRepository(__DIR__ . '/Data/users.json');
+$repo = new \App\Repositories\UserRepository(__DIR__ . '/Data/users.json');
 $player = $_SESSION['player'] ?? null;
 
 // var_dump($_SERVER);
@@ -40,8 +37,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $player === null) {
             $_SESSION['player'] = ['login' => $user->login];
             $player = $_SESSION['player'];
 
-            $config = new GameConfigRepository(__DIR__ . '/Data/Config/game_config.json');
-            $saves = new SaveRepository(__DIR__ . '/Data/Saves');
+            $config = new \App\Repositories\GameConfigRepository(__DIR__ . '/Data/Config/game_config.json');
+            $saves = new \App\Repositories\SaveRepository(__DIR__ . '/Data/Saves');
             $saves->ensure($user->login, $config);
         }
     }

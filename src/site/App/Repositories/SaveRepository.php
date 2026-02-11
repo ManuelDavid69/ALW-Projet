@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Repositories;
+
+use InvalidArgumentException;
+use RuntimeException;
+
 /**
  * Persistance de la partie d'un joueur dans un fichier JSON.
  *

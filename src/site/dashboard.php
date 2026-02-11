@@ -7,8 +7,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 
-require_once __DIR__ . '/Utils/GameConfigRepository.php';
-require_once __DIR__ . '/Utils/SaveRepository.php';
+require_once __DIR__ . '/Framework/autoloader.php';
 
 // Cette page est réservée aux joueurs authentifiés. Sans session valide, on
 // répond avec le code 401 (Unauthorized) plutôt que d'afficher la ferme.
@@ -32,8 +31,8 @@ if (!isset($_SESSION['player']['login'])) {
     exit;
 }
 
-$config = new GameConfigRepository(__DIR__ . '/Data/Config/game_config.json');
-$saves = new SaveRepository(__DIR__ . '/Data/Saves');
+$config = new \App\Repositories\GameConfigRepository(__DIR__ . '/Data/Config/game_config.json');
+$saves = new \App\Repositories\SaveRepository(__DIR__ . '/Data/Saves');
 
 $login = (string) $_SESSION['player']['login'];
 $products = $config->getProducts();

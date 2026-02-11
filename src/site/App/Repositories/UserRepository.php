@@ -6,7 +6,7 @@ use App\Models\User;
 use Exception;
 
 /**
- * Undocumented class
+ * Accès aux comptes des joueurs.
  */
 class UserRepository
 {

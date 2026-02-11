@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-class User {
+class User
+{
     public string $login;
     public string $password;
 }

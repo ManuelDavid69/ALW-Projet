@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Repositories;
+
+use InvalidArgumentException;
+use RuntimeException;
+
 /**
  * Accès en lecture aux règles du jeu (produits et bâtiments).
  *
