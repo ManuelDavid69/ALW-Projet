@@ -1,50 +1,4 @@
-<?php
-
-declare(strict_types=1);
-
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
-
-
-require_once __DIR__ . '/Framework/autoloader.php';
-
-// Cette page est réservée aux joueurs authentifiés. Sans session valide, on
-// répond avec le code 401 (Unauthorized) plutôt que d'afficher la ferme.
-if (!isset($_SESSION['player']['login'])) {
-    http_response_code(401);
-    ?><!DOCTYPE html>
-    <html lang="fr">
-    <head>
-        <meta charset="UTF-8">
-        <title>Accès refusé — La Ferme</title>
-    <link rel="stylesheet" href="/Public/style.css">
-    </head>
-    <body class="page-dashboard">
-        <div class="error-box">
-            <h1>401 — Authentification requise</h1>
-            <p>Vous devez être connecté pour consulter le tableau de bord de votre ferme.</p>
-            <p><a href="sep.php?page=login">Se connecter</a></p>
-        </div>
-    </body>
-    </html><?php
-    exit;
-}
-
-$config = new \App\Repositories\GameConfigRepository(__DIR__ . '/Data/Config/game_config.json');
-$saves = new \App\Repositories\SaveRepository(__DIR__ . '/Data/Saves');
-
-$login = (string) $_SESSION['player']['login'];
-$products = $config->getProducts();
-$buildings = $config->getBuildings();
-$save = $saves->ensure($login, $config);
-
-$totalLevel = 0;
-foreach ($save['buildings'] as $buildingState) {
-    $totalLevel += (int) ($buildingState['level'] ?? 1);
-}
-
-?><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -54,17 +8,17 @@ foreach ($save['buildings'] as $buildingState) {
 </head>
 <body class="page-dashboard">
     <header class="topbar">
-        <a class="brand" href="sep.php?page=dashboard">🌾 La <span>Ferme</span></a>
+        <a class="brand" href="/dashboard">🌾 La <span>Ferme</span></a>
         <nav>
-            <a href="sep.php?page=dashboard">Tableau de bord</a>
-            <span>Connecté : <?php echo htmlspecialchars($login, ENT_QUOTES, 'UTF-8'); ?></span>
+            <a href="/dashboard">Tableau de bord</a>
+            <span>Connecté : <?php echo htmlspecialchars((string) $login, ENT_QUOTES, 'UTF-8'); ?></span>
         </nav>
     </header>
 
     <main>
         <section class="hero">
             <div>
-                <p class="eyebrow">Ferme de <?php echo htmlspecialchars($login, ENT_QUOTES, 'UTF-8'); ?></p>
+                <p class="eyebrow">Ferme de <?php echo htmlspecialchars((string) $login, ENT_QUOTES, 'UTF-8'); ?></p>
                 <h1>Votre exploitation</h1>
                 <p class="lede">Récoltez vos produits, améliorez vos bâtiments et faites prospérer la ferme.</p>
             </div>
@@ -82,11 +36,11 @@ foreach ($save['buildings'] as $buildingState) {
             </header>
             <div class="product-grid">
                 <?php foreach ($products as $productId => $product) { ?>
-                    <article id="product-<?php echo htmlspecialchars($productId, ENT_QUOTES, 'UTF-8'); ?>" class="product-card">
+                    <article id="product-<?php echo htmlspecialchars((string) $productId, ENT_QUOTES, 'UTF-8'); ?>" class="product-card">
                         <span class="icon" aria-hidden="true"><?php echo $product['icon']; ?></span>
                         <div>
-                            <h3><?php echo htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8'); ?></h3>
-                            <p><?php echo htmlspecialchars($product['unit'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <h3><?php echo htmlspecialchars((string) $product['name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                            <p><?php echo htmlspecialchars((string) $product['unit'], ENT_QUOTES, 'UTF-8'); ?></p>
                         </div>
                         <output class="stock"><?php echo (int) ($save['inventory'][$productId] ?? 0); ?></output>
                     </article>
@@ -111,20 +65,20 @@ foreach ($save['buildings'] as $buildingState) {
                         }
                     }
                     ?>
-                    <article id="building-<?php echo htmlspecialchars($buildingId, ENT_QUOTES, 'UTF-8'); ?>" class="building-card">
+                    <article id="building-<?php echo htmlspecialchars((string) $buildingId, ENT_QUOTES, 'UTF-8'); ?>" class="building-card">
                         <header>
                             <span class="icon" aria-hidden="true"><?php echo $building['icon']; ?></span>
                             <div>
-                                <h3><?php echo htmlspecialchars($building['name'], ENT_QUOTES, 'UTF-8'); ?></h3>
-                                <p>Produit : <?php echo htmlspecialchars($products[$building['produces']]['name'], ENT_QUOTES, 'UTF-8'); ?></p>
+                                <h3><?php echo htmlspecialchars((string) $building['name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                                <p>Produit : <?php echo htmlspecialchars((string) $products[$building['produces']]['name'], ENT_QUOTES, 'UTF-8'); ?></p>
                             </div>
                             <span class="level-badge">Niv. <output class="level"><?php echo $level; ?></output></span>
                         </header>
 
-                        <p class="description"><?php echo htmlspecialchars($building['description'], ENT_QUOTES, 'UTF-8'); ?></p>
+                        <p class="description"><?php echo htmlspecialchars((string) $building['description'], ENT_QUOTES, 'UTF-8'); ?></p>
 
                         <div class="production">
-                            Récolte : <strong><?php echo $yield; ?> <?php echo htmlspecialchars($products[$building['produces']]['unit'], ENT_QUOTES, 'UTF-8'); ?></strong>
+                            Récolte : <strong><?php echo $yield; ?> <?php echo htmlspecialchars((string) $products[$building['produces']]['unit'], ENT_QUOTES, 'UTF-8'); ?></strong>
                         </div>
 
                         <div class="actions">
