@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}La Ferme{% endblock %}</title>
+    <link rel="stylesheet" href="/Public/style.css">
+    {% block head %}{% endblock %}
+</head>
+<body class="{% block bodyClass %}page-dashboard{% endblock %}">
+    <header class="topbar">
+        <a class="brand" href="{{ player ? '/dashboard' : '/login' }}">🌾 La <span>Ferme</span></a>
+        {% if player %}
+            <nav>
+                <a href="/dashboard">Tableau de bord</a>
+                <span>Connecté : {{ player }}</span>
+                <form action="/logout" method="post" class="logout-form">
+                    <button type="submit" class="link-button">Se déconnecter</button>
+                </form>
+            </nav>
+        {% endif %}
+    </header>
+
+    {% block body %}{% endblock %}
+</body>
+</html>

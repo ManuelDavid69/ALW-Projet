@@ -152,6 +152,23 @@ button {
     color: var(--blue);
 }
 
+.logout-form {
+    margin: 0;
+}
+
+.link-button {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: var(--muted);
+    font-size: .95rem;
+}
+
+.link-button:hover {
+    color: var(--blue);
+    filter: none;
+}
+
 main {
     width: min(1180px, 94vw);
     margin: 0 auto;

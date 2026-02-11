@@ -8,22 +8,24 @@ class DefaultController extends AbstractController
 {
     public function index()
     {
-        $data = "Bonjour le monde !";
-        $this->app->view()->setParam('pageTitle', $data);
-        $this->app->view()->render('homepage.tpl.php');
+        // La racine du site affiche la connexion ; cette action reste un
+        // exemple de contrôleur pour le framework.
+        header('Location: /login');
+        exit;
     }
 
     public function test()
     {
-        echo '<p>Cette page a reçu un paramètre nommé "nombre" et valant "' . $this->parameters['nombre'] . '"</p>
-              <p>Contenu complet de <code>$this->parameters</code>:</p>
-              <pre>';
+        echo '<p>Cette page a reçu un paramètre nommé "nombre" et valant "'
+            . htmlspecialchars((string) ($this->parameters['nombre'] ?? ''), ENT_QUOTES, 'UTF-8')
+            . '"</p><p>Contenu complet de <code>$this->parameters</code> :</p><pre>';
         print_r($this->parameters);
+        echo '</pre>';
     }
 
     public function error404()
     {
         http_response_code(404);
-        $this->app->view()->render('404.tpl.php');
+        echo $this->app->twig()->render('404.html.twig');
     }
 }

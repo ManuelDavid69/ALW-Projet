@@ -25,9 +25,10 @@ class AuthController extends AbstractController
             exit;
         }
 
-        $this->app->view()->setParam('error', null);
-        $this->app->view()->setParam('lastLogin', '');
-        $this->app->view()->render('login.tpl.php');
+        echo $this->app->twig()->render('login.html.twig', [
+            'error' => null,
+            'lastLogin' => '',
+        ]);
     }
 
     /**
@@ -39,6 +40,7 @@ class AuthController extends AbstractController
         $password = (string) ($_POST['password'] ?? '');
 
         $error = null;
+        $user = null;
         if ($login === '' || $password === '') {
             $error = 'Veuillez renseigner votre identifiant et votre mot de passe.';
         } else {
@@ -53,9 +55,10 @@ class AuthController extends AbstractController
         }
 
         if ($error !== null) {
-            $this->app->view()->setParam('error', $error);
-            $this->app->view()->setParam('lastLogin', $login);
-            $this->app->view()->render('login.tpl.php');
+            echo $this->app->twig()->render('login.html.twig', [
+                'error' => $error,
+                'lastLogin' => $login,
+            ]);
             return;
         }
 
@@ -69,6 +72,32 @@ class AuthController extends AbstractController
         $saves->ensure($user->login, $config);
 
         header('Location: /dashboard');
+        exit;
+    }
+
+    /**
+     * Ferme la session et renvoie vers la page de connexion.
+     */
+    public function logout()
+    {
+        $_SESSION = [];
+
+        if (ini_get('session.use_cookies')) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params['path'],
+                $params['domain'],
+                $params['secure'],
+                $params['httponly']
+            );
+        }
+
+        session_destroy();
+
+        header('Location: /login');
         exit;
     }
 }

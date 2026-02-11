@@ -18,7 +18,7 @@ class DashboardController extends AbstractController
         // Page réservée aux joueurs authentifiés : 401 sans session valide.
         if (!isset($_SESSION['player']['login'])) {
             http_response_code(401);
-            $this->app->view()->render('401.tpl.php');
+            echo $this->app->twig()->render('401.html.twig');
             return;
         }
 
@@ -30,18 +30,52 @@ class DashboardController extends AbstractController
         $buildings = $config->getBuildings();
         $save = $saves->ensure($login, $config);
 
-        $totalLevel = 0;
-        foreach ($save['buildings'] as $buildingState) {
-            $totalLevel += (int) ($buildingState['level'] ?? 1);
+        $productViews = [];
+        foreach ($products as $productId => $product) {
+            $product['stock'] = (int) ($save['inventory'][$productId] ?? 0);
+            $productViews[$productId] = $product;
         }
 
-        $view = $this->app->view();
-        $view->setParam('login', $login);
-        $view->setParam('products', $products);
-        $view->setParam('buildings', $buildings);
-        $view->setParam('save', $save);
-        $view->setParam('totalLevel', $totalLevel);
-        $view->setParam('config', $config);
-        $view->render('dashboard.tpl.php');
+        $buildingViews = [];
+        $totalLevel = 0;
+        foreach ($buildings as $buildingId => $building) {
+            $level = max(1, (int) ($save['buildings'][$buildingId]['level'] ?? 1));
+            $totalLevel += $level;
+
+            $cost = $config->getUpgradeCost($buildingId, $level);
+            $canAfford = true;
+            $costParts = [];
+            foreach ($cost as $productId => $quantity) {
+                $costParts[] = [
+                    'name' => $products[$productId]['name'],
+                    'icon' => $products[$productId]['icon'],
+                    'quantity' => $quantity,
+                ];
+
+                if ((int) ($save['inventory'][$productId] ?? 0) < $quantity) {
+                    $canAfford = false;
+                }
+            }
+
+            $buildingViews[] = [
+                'id' => $buildingId,
+                'name' => $building['name'],
+                'icon' => $building['icon'],
+                'description' => $building['description'],
+                'produces' => $products[$building['produces']],
+                'level' => $level,
+                'yield' => $config->getHarvestYield($buildingId, $level),
+                'cost' => $cost,
+                'costParts' => $costParts,
+                'canAfford' => $canAfford,
+            ];
+        }
+
+        echo $this->app->twig()->render('dashboard.html.twig', [
+            'login' => $login,
+            'products' => $productViews,
+            'buildings' => $buildingViews,
+            'totalLevel' => $totalLevel,
+        ]);
     }
 }

@@ -1,0 +1,11 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Page introuvable — La Ferme{% endblock %}
+
+{% block body %}
+    <div class="error-box">
+        <h1>404 — Page introuvable</h1>
+        <p>L'URL demandée n'existe pas sur ce serveur.</p>
+        <p><a href="{{ player ? '/dashboard' : '/login' }}">Retour à l'accueil</a></p>
+    </div>
+{% endblock %}

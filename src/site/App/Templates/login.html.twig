@@ -1,0 +1,19 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Connexion — La Ferme{% endblock %}
+{% block bodyClass %}page-login{% endblock %}
+
+{% block body %}
+    <form action="/login" method="POST" class="loginForm">
+        <h2>Connexion</h2>
+        <input type="text" name="username" placeholder="Nom d'utilisateur" required autocomplete="username"
+               value="{{ lastLogin }}">
+        <input type="password" name="password" placeholder="Mot de passe" required autocomplete="current-password">
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <button type="submit">Se connecter</button>
+    </form>
+{% endblock %}

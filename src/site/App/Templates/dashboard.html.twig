@@ -1,0 +1,75 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Tableau de bord — La Ferme{% endblock %}
+
+{% block body %}
+    <main>
+        <section class="hero">
+            <div>
+                <p class="eyebrow">Ferme de {{ login }}</p>
+                <h1>Votre exploitation</h1>
+                <p class="lede">Récoltez vos produits, améliorez vos bâtiments et faites prospérer la ferme.</p>
+            </div>
+            <dl class="stats">
+                <div><dt>Produits</dt><dd>{{ products|length }}</dd></div>
+                <div><dt>Bâtiments</dt><dd>{{ buildings|length }}</dd></div>
+                <div><dt>Niveaux</dt><dd>{{ totalLevel }}</dd></div>
+            </dl>
+        </section>
+
+        <section class="panel" id="inventory">
+            <header>
+                <h2>Inventaire</h2>
+                <span class="hint">Stock actuel</span>
+            </header>
+            <div class="product-grid">
+                {% for product in products %}
+                    <article id="product-{{ product.id }}" class="product-card">
+                        <span class="icon" aria-hidden="true">{{ product.icon }}</span>
+                        <div>
+                            <h3>{{ product.name }}</h3>
+                            <p>{{ product.unit }}</p>
+                        </div>
+                        <output class="stock" data-product="{{ product.id }}">{{ product.stock }}</output>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="panel" id="buildings">
+            <header>
+                <h2>Bâtiments</h2>
+                <span class="hint">Produire et améliorer</span>
+            </header>
+            <div class="building-grid">
+                {% for building in buildings %}
+                    <article id="building-{{ building.id }}" class="building-card">
+                        <header>
+                            <span class="icon" aria-hidden="true">{{ building.icon }}</span>
+                            <div>
+                                <h3>{{ building.name }}</h3>
+                                <p>Produit : {{ building.produces.name }}</p>
+                            </div>
+                            <span class="level-badge">Niv. <output class="level">{{ building.level }}</output></span>
+                        </header>
+
+                        <p class="description">{{ building.description }}</p>
+
+                        <div class="production">
+                            Récolte : <strong>{{ building.yield }} {{ building.produces.unit }}</strong>
+                        </div>
+
+                        <div class="actions">
+                            <button class="harvest" type="button" data-building="{{ building.id }}">Produire</button>
+                            <button class="upgrade" type="button" data-building="{{ building.id }}">Améliorer</button>
+                        </div>
+
+                        <output class="cost {{ building.canAfford ? 'affordable' : 'unaffordable' }}">
+                            Coût : {% for part in building.costParts %}{{ part.icon }} {{ part.quantity }}{% if not loop.last %} · {% endif %}{% endfor %}
+                        </output>
+                    </article>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+{% endblock %}
