@@ -2,6 +2,13 @@
 # https://hub.docker.com/_/php
 FROM php:8.2-apache
 
+# Twig a besoin de mbstring ; l'API utilise cURL pour interroger un service
+# externe (météo).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libonig-dev libcurl4-openssl-dev \
+    && docker-php-ext-install mbstring curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # Installer et activer XDebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 

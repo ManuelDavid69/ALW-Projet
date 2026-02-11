@@ -2,6 +2,12 @@
 # https://hub.docker.com/_/php
 FROM php:8.2-apache
 
+# Twig a besoin de l'extension mbstring pour manipuler l'UTF-8.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libonig-dev \
+    && docker-php-ext-install mbstring \
+    && rm -rf /var/lib/apt/lists/*
+
 # Installer et activer XDebug
 RUN pecl install xdebug && docker-php-ext-enable xdebug
 
