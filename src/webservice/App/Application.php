@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Controllers\ApiController;
 use App\Controllers\DefaultController;
 use CPE\Framework\AbstractApplication;
 use CPE\Framework\Router;
@@ -19,6 +20,8 @@ class Application extends AbstractApplication
         $this->router->mapDefault(DefaultController::class, 'error404');
 
         $this->router->map('GET', '/', DefaultController::class, 'index');
+        $this->router->map('GET', '/api/config', ApiController::class, 'config');
+        $this->router->map('GET', '/api/players/{string:player}/inventory', ApiController::class, 'inventory');
 
         $route = $this->router->findRoute();
         $controller = $this->router->getController($route->controller);
