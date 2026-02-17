@@ -53,7 +53,10 @@ class Route
                 if ($matches[1] == 'int') {
                     return '(\d+)';
                 } elseif ($matches[1] == 'string') {
-                    return '(.+)';
+                    // Un paramètre d'URL ne doit pas engloutir les segments
+                    // suivants : /players/{string:nom}/inventory doit
+                    // capturer « nom » seul, pas « nom/inventory ».
+                    return '([^/]+)';
                 } else {
                     return $matches[0];
                 }
