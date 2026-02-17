@@ -44,7 +44,7 @@ class AuthController extends AbstractController
         if ($login === '' || $password === '') {
             $error = 'Veuillez renseigner votre identifiant et votre mot de passe.';
         } else {
-            $repo = new UserRepository('Data/users.json');
+            $repo = new UserRepository(DATA_PATH . '/users.json');
             $user = $repo->get($login);
 
             // password_verify() compare la saisie au hash stocké : le mot de
@@ -67,8 +67,8 @@ class AuthController extends AbstractController
         session_regenerate_id(true);
         $_SESSION['player'] = ['login' => $user->login];
 
-        $config = new GameConfigRepository('Data/Config/game_config.json');
-        $saves = new SaveRepository('Data/Saves');
+        $config = new GameConfigRepository(DATA_PATH . '/Config/game_config.json');
+        $saves = new SaveRepository(DATA_PATH . '/Saves');
         $saves->ensure($user->login, $config);
 
         header('Location: /dashboard');

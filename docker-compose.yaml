@@ -9,6 +9,7 @@ services:
       - 50180:80
     volumes:
       - ./src/site:/var/www/html
+      - ./src/Data:/var/www/html/Data
     # user: "root:www-data"
 
   webservice:
@@ -21,4 +22,5 @@ services:
       - 50181:80
     volumes:
       - ./src/webservice:/var/www/html
+      - ./src/Data:/var/www/html/Data
     # user: "root:www-data"

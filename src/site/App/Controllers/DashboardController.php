@@ -23,8 +23,8 @@ class DashboardController extends AbstractController
         }
 
         $login = (string) $_SESSION['player']['login'];
-        $config = new GameConfigRepository('Data/Config/game_config.json');
-        $saves = new SaveRepository('Data/Saves');
+        $config = new GameConfigRepository(DATA_PATH . '/Config/game_config.json');
+        $saves = new SaveRepository(DATA_PATH . '/Saves');
 
         $products = $config->getProducts();
         $buildings = $config->getBuildings();
