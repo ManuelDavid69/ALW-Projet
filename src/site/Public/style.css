@@ -424,6 +424,17 @@ button:disabled {
     color: #ff9c9c;
 }
 
+.farm-status {
+    min-height: 1.4em;
+    margin: 0 0 1rem;
+    color: var(--muted);
+    font-size: .9rem;
+}
+
+.farm-status.error {
+    color: #ff9c9c;
+}
+
 /* ------------------------------------------------------------------ */
 /* Page d'erreur                                                      */
 /* ------------------------------------------------------------------ */

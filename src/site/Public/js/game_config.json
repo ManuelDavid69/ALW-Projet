@@ -1,0 +1,76 @@
+{
+  "products": {
+    "ble": {
+      "name": "Blé",
+      "icon": "🌾",
+      "unit": "gerbes"
+    },
+    "lait": {
+      "name": "Lait",
+      "icon": "🥛",
+      "unit": "bouteilles"
+    },
+    "oeuf": {
+      "name": "Œufs",
+      "icon": "🥚",
+      "unit": "œufs"
+    },
+    "laine": {
+      "name": "Laine",
+      "icon": "🧶",
+      "unit": "balles"
+    }
+  },
+  "buildings": {
+    "champ_ble": {
+      "name": "Champ de blé",
+      "icon": "🌾",
+      "description": "Un carré de terre labouré qui donne du blé à chaque récolte.",
+      "produces": "ble",
+      "baseYield": 3,
+      "yieldPerLevel": 1,
+      "upgradeCost": {
+        "ble": 10
+      },
+      "costGrowth": 1.6
+    },
+    "vache": {
+      "name": "Vache",
+      "icon": "🐄",
+      "description": "Une vache tranquille qui produit du lait deux fois par jour.",
+      "produces": "lait",
+      "baseYield": 2,
+      "yieldPerLevel": 1,
+      "upgradeCost": {
+        "ble": 18
+      },
+      "costGrowth": 1.7
+    },
+    "poulailler": {
+      "name": "Poulailler",
+      "icon": "🐔",
+      "description": "Les poules picorent le grain et pondent des œufs frais.",
+      "produces": "oeuf",
+      "baseYield": 2,
+      "yieldPerLevel": 1,
+      "upgradeCost": {
+        "ble": 14,
+        "lait": 4
+      },
+      "costGrowth": 1.65
+    },
+    "bergerie": {
+      "name": "Bergerie",
+      "icon": "🐑",
+      "description": "Un abri pour les moutons dont la laine se renouvelle chaque saison.",
+      "produces": "laine",
+      "baseYield": 1,
+      "yieldPerLevel": 1,
+      "upgradeCost": {
+        "ble": 24,
+        "lait": 8
+      },
+      "costGrowth": 1.8
+    }
+  }
+}

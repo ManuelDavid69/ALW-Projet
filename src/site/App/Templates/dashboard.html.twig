@@ -17,6 +17,8 @@
             </dl>
         </section>
 
+        <p id="farm-status" class="farm-status" role="status" aria-live="polite"></p>
+
         <section class="panel" id="inventory">
             <header>
                 <h2>Inventaire</h2>
@@ -72,4 +74,10 @@
             </div>
         </section>
     </main>
+
+    <script>
+        window.FERME_PLAYER = {{ player|json_encode|raw }};
+    </script>
+    <script src="/Public/js/FermeEngine.js"></script>
+    <script src="/Public/js/main.js"></script>
 {% endblock %}
