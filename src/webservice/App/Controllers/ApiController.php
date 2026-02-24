@@ -84,6 +84,14 @@ class ApiController extends AbstractController
     }
 
     /**
+     * DELETE /api/players/{player}/products/{product}
+     */
+    public function deleteProduct()
+    {
+        $this->respond(fn () => $this->farm->discardProduct($this->player(), $this->param('product')));
+    }
+
+    /**
      * GET /api/players/{player}/generators/{generator}
      */
     public function readGenerator()

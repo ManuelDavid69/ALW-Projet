@@ -70,6 +70,26 @@ class FarmService
         ];
     }
 
+    /**
+     * Jette le stock d'un produit (DELETE), sans supprimer le type de produit.
+     */
+    public function discardProduct(string $player, string $productId): array
+    {
+        $product = $this->requireProduct($productId);
+
+        $this->saves->mutate($player, function (array $save) use ($productId): array {
+            $save['inventory'][$productId] = 0;
+            return $save;
+        });
+
+        return [
+            'id' => $productId,
+            'name' => $product['name'],
+            'unit' => $product['unit'],
+            'stock' => 0,
+        ];
+    }
+
     public function readGenerator(string $player, string $buildingId): array
     {
         $building = $this->requireBuilding($buildingId);
