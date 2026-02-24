@@ -23,6 +23,10 @@ class Application extends AbstractApplication
         $this->router->map('GET', '/api/config', ApiController::class, 'config');
         $this->router->map('GET', '/api/players/{string:player}/inventory', ApiController::class, 'inventory');
         $this->router->map('GET', '/api/players/{string:player}/buildings', ApiController::class, 'buildings');
+        $this->router->map('GET', '/api/players/{string:player}/products/{string:product}', ApiController::class, 'readProduct');
+        $this->router->map('PUT', '/api/players/{string:player}/products/{string:product}', ApiController::class, 'updateProduct');
+        $this->router->map('GET', '/api/players/{string:player}/generators/{string:generator}', ApiController::class, 'readGenerator');
+        $this->router->map('PUT', '/api/players/{string:player}/generators/{string:generator}', ApiController::class, 'updateGenerator');
 
         $route = $this->router->findRoute();
         $controller = $this->router->getController($route->controller);

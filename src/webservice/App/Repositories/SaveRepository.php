@@ -98,6 +98,54 @@ class SaveRepository
         $this->write($login, $save);
     }
 
+    /**
+     * Modifie une sauvegarde sous verrou exclusif.
+     *
+     * Le cycle lecture → modification → écriture doit être atomique : deux
+     * requêtes simultanées (deux clics sur « Récolter ») ne doivent pas
+     * écraser mutuellement leurs changements.
+     *
+     * @param callable(array): array $mutator reçoit puis retourne la sauvegarde
+     */
+    public function mutate(string $login, callable $mutator): array
+    {
+        $path = $this->path($login);
+        $handle = fopen($path, 'c+');
+        if ($handle === false) {
+            throw new RuntimeException('Impossible d\'ouvrir la sauvegarde de ' . $login);
+        }
+
+        try {
+            if (!flock($handle, LOCK_EX)) {
+                throw new RuntimeException('Impossible de verrouiller la sauvegarde de ' . $login);
+            }
+
+            $contents = stream_get_contents($handle);
+            $save = json_decode((string) $contents, true);
+            if (!is_array($save)) {
+                throw new RuntimeException('Sauvegarde illisible pour le joueur ' . $login);
+            }
+
+            $save = $mutator($save);
+            $save['updatedAt'] = gmdate('c');
+
+            $json = json_encode($save, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+            if ($json === false) {
+                throw new RuntimeException('Impossible d\'encoder la sauvegarde de ' . $login);
+            }
+
+            ftruncate($handle, 0);
+            rewind($handle);
+            fwrite($handle, $json . PHP_EOL);
+            fflush($handle);
+            flock($handle, LOCK_UN);
+
+            return $save;
+        } finally {
+            fclose($handle);
+        }
+    }
+
     private function write(string $login, array $save): void
     {
         $path = $this->path($login);
