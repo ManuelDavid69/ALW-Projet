@@ -110,6 +110,22 @@ class ApiController extends AbstractController
         });
     }
 
+    /**
+     * POST /api/players/{player}/buildings/{building}/harvest
+     */
+    public function harvest()
+    {
+        $this->respond(fn () => $this->farm->harvest($this->player(), $this->param('building')));
+    }
+
+    /**
+     * POST /api/players/{player}/buildings/{building}/upgrade
+     */
+    public function upgrade()
+    {
+        $this->respond(fn () => $this->farm->upgrade($this->player(), $this->param('building')));
+    }
+
     protected function player(): string
     {
         return (string) ($this->parameters['player'] ?? '');

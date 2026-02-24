@@ -102,6 +102,96 @@ class FarmService
         ];
     }
 
+    /**
+     * Récolte un bâtiment et ajoute la production à l'inventaire.
+     *
+     * Le client ne transmet aucune quantité : c'est le serveur qui la calcule
+     * à partir du niveau réel du bâtiment.
+     */
+    public function harvest(string $player, string $buildingId): array
+    {
+        $building = $this->requireBuilding($buildingId);
+        $this->requireSave($player);
+
+        $productId = (string) $building['produces'];
+
+        $save = $this->saves->mutate($player, function (array $save) use ($buildingId, $productId): array {
+            $level = max(1, (int) ($save['buildings'][$buildingId]['level'] ?? 1));
+            $quantity = $this->config->getHarvestYield($buildingId, $level);
+
+            $save['inventory'][$productId] = (int) ($save['inventory'][$productId] ?? 0) + $quantity;
+            $save['lastHarvest'] = [
+                'building' => $buildingId,
+                'product' => $productId,
+                'quantity' => $quantity,
+                'at' => gmdate('c'),
+            ];
+
+            return $save;
+        });
+
+        $level = max(1, (int) ($save['buildings'][$buildingId]['level'] ?? 1));
+
+        return [
+            'building' => $buildingId,
+            'product' => $productId,
+            'quantity' => $this->config->getHarvestYield($buildingId, $level),
+            'level' => $level,
+            'inventory' => $save['inventory'],
+            'buildings' => $save['buildings'],
+        ];
+    }
+
+    /**
+     * Améliore un bâtiment d'un niveau.
+     *
+     * Le coût est vérifié puis débité dans la même opération verrouillée que
+     * l'incrément du niveau : deux clics simultanés ne peuvent pas payer deux
+     * fois avec le même stock.
+     */
+    public function upgrade(string $player, string $buildingId): array
+    {
+        $this->requireBuilding($buildingId);
+        $this->requireSave($player);
+
+        $save = $this->saves->mutate($player, function (array $save) use ($buildingId): array {
+            $level = max(1, (int) ($save['buildings'][$buildingId]['level'] ?? 1));
+            $cost = $this->config->getUpgradeCost($buildingId, $level);
+
+            $missing = [];
+            foreach ($cost as $productId => $quantity) {
+                $available = (int) ($save['inventory'][$productId] ?? 0);
+                if ($available < $quantity) {
+                    $product = $this->config->getProduct($productId);
+                    $name = $product['name'] ?? $productId;
+                    $missing[] = sprintf('%s (%d/%d)', $name, $available, $quantity);
+                }
+            }
+
+            if ($missing !== []) {
+                throw new ApiException(
+                    'Ressources insuffisantes pour améliorer ce bâtiment : ' . implode(', ', $missing),
+                    409
+                );
+            }
+
+            foreach ($cost as $productId => $quantity) {
+                $save['inventory'][$productId] = (int) $save['inventory'][$productId] - $quantity;
+            }
+
+            $save['buildings'][$buildingId]['level'] = $level + 1;
+
+            return $save;
+        });
+
+        return [
+            'building' => $buildingId,
+            'level' => (int) $save['buildings'][$buildingId]['level'],
+            'inventory' => $save['inventory'],
+            'buildings' => $save['buildings'],
+        ];
+    }
+
     private function requireSave(string $player): array
     {
         if (!SaveRepository::isValidLogin($player) || !$this->saves->exists($player)) {

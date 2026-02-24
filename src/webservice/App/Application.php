@@ -4,6 +4,7 @@ namespace App;
 
 use App\Controllers\ApiController;
 use App\Controllers\DefaultController;
+use App\Http\Cors;
 use CPE\Framework\AbstractApplication;
 use CPE\Framework\Router;
 
@@ -11,10 +12,10 @@ class Application extends AbstractApplication
 {
     public function run()
     {
-        // Contournement initial des CORS : le front (port 50180) et l'API
-        // (port 50181) sont deux origines distinctes.
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Headers: *');
+        // Le front (port 50180) et l'API (port 50181) sont deux origines
+        // distinctes : les en-têtes CORS doivent être présents sur toutes les
+        // réponses, y compris les préflight OPTIONS.
+        Cors::apply();
 
         $this->router = new Router($this);
         $this->router->mapDefault(DefaultController::class, 'error404');
@@ -27,6 +28,8 @@ class Application extends AbstractApplication
         $this->router->map('PUT', '/api/players/{string:player}/products/{string:product}', ApiController::class, 'updateProduct');
         $this->router->map('GET', '/api/players/{string:player}/generators/{string:generator}', ApiController::class, 'readGenerator');
         $this->router->map('PUT', '/api/players/{string:player}/generators/{string:generator}', ApiController::class, 'updateGenerator');
+        $this->router->map('POST', '/api/players/{string:player}/buildings/{string:building}/harvest', ApiController::class, 'harvest');
+        $this->router->map('POST', '/api/players/{string:player}/buildings/{string:building}/upgrade', ApiController::class, 'upgrade');
 
         $route = $this->router->findRoute();
         $controller = $this->router->getController($route->controller);

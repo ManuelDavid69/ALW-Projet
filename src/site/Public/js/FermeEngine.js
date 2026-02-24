@@ -129,6 +129,11 @@ class FermeEngine {
             if (upgradeButton) {
                 upgradeButton.disabled = !canAfford;
             }
+
+            const harvestButton = card.querySelector('button.harvest');
+            if (harvestButton) {
+                harvestButton.disabled = false;
+            }
         }
     }
 
