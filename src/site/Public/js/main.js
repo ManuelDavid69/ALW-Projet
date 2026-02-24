@@ -32,11 +32,16 @@
     }
 
     /**
-     * Recharge l'inventaire affiché.
+     * Recharge l'inventaire et les bâtiments affichés.
      */
     engine.onLoadState = async () => {
-        const inventory = await requestJson(playerUrl('/inventory'));
+        const [inventory, buildings] = await Promise.all([
+            requestJson(playerUrl('/inventory')),
+            requestJson(playerUrl('/buildings')),
+        ]);
+
         engine.renderInventory(inventory);
+        engine.renderBuildings(buildings, inventory);
     };
 
     /**

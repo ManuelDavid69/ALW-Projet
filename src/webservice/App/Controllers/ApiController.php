@@ -54,6 +54,20 @@ class ApiController extends AbstractController
     }
 
     /**
+     * GET /api/players/{player}/buildings
+     */
+    public function buildings()
+    {
+        $player = (string) ($this->parameters['player'] ?? '');
+        $save = $this->findSave($player);
+        if ($save === null) {
+            return;
+        }
+
+        $this->json($save['buildings']);
+    }
+
+    /**
      * Charge la sauvegarde du joueur ou renvoie une erreur 404.
      */
     protected function findSave(string $player): ?array
