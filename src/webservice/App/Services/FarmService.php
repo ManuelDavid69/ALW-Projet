@@ -19,7 +19,8 @@ class FarmService
 {
     public function __construct(
         private GameConfigRepository $config,
-        private SaveRepository $saves
+        private SaveRepository $saves,
+        private WeatherService $weather
     ) {
     }
 
@@ -134,10 +135,12 @@ class FarmService
         $this->requireSave($player);
 
         $productId = (string) $building['produces'];
+        $modifier = $this->weather->productionModifier();
 
-        $save = $this->saves->mutate($player, function (array $save) use ($buildingId, $productId): array {
+        $save = $this->saves->mutate($player, function (array $save) use ($buildingId, $productId, $modifier): array {
             $level = max(1, (int) ($save['buildings'][$buildingId]['level'] ?? 1));
-            $quantity = $this->config->getHarvestYield($buildingId, $level);
+            $baseQuantity = $this->config->getHarvestYield($buildingId, $level);
+            $quantity = max(1, (int) round($baseQuantity * $modifier));
 
             $save['inventory'][$productId] = (int) ($save['inventory'][$productId] ?? 0) + $quantity;
             $save['lastHarvest'] = [
@@ -151,11 +154,14 @@ class FarmService
         });
 
         $level = max(1, (int) ($save['buildings'][$buildingId]['level'] ?? 1));
+        $baseQuantity = $this->config->getHarvestYield($buildingId, $level);
 
         return [
             'building' => $buildingId,
             'product' => $productId,
-            'quantity' => $this->config->getHarvestYield($buildingId, $level),
+            'baseQuantity' => $baseQuantity,
+            'modifier' => $modifier,
+            'quantity' => max(1, (int) round($baseQuantity * $modifier)),
             'level' => $level,
             'inventory' => $save['inventory'],
             'buildings' => $save['buildings'],

@@ -22,6 +22,7 @@ class Application extends AbstractApplication
 
         $this->router->map('GET', '/', DefaultController::class, 'index');
         $this->router->map('GET', '/api/config', ApiController::class, 'config');
+        $this->router->map('GET', '/api/weather', ApiController::class, 'weather');
         $this->router->map('GET', '/api/players/{string:player}/inventory', ApiController::class, 'inventory');
         $this->router->map('GET', '/api/players/{string:player}/buildings', ApiController::class, 'buildings');
         $this->router->map('GET', '/api/players/{string:player}/products/{string:product}', ApiController::class, 'readProduct');

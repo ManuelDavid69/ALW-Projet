@@ -435,6 +435,59 @@ button:disabled {
     color: #ff9c9c;
 }
 
+.weather-panel {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: .8rem 1.5rem;
+}
+
+.weather-now {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.weather-icon {
+    display: grid;
+    place-items: center;
+    width: 3.2rem;
+    height: 3.2rem;
+    font-size: 1.9rem;
+    background: #000;
+    border: 1px solid #ffffff12;
+    border-radius: .8rem;
+}
+
+.weather-panel h2 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.weather-meta {
+    margin: .25rem 0 0;
+    color: var(--muted);
+    font-size: .88rem;
+}
+
+.weather-bonus {
+    padding: .35rem .85rem;
+    border-radius: 999px;
+    background: #4af62612;
+    border: 1px solid #4af62644;
+    color: var(--green);
+    font-size: 1.2rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.weather-panel .hint {
+    grid-column: 1 / -1;
+    margin: 0;
+    color: var(--muted);
+    font-size: .85rem;
+}
+
 /* ------------------------------------------------------------------ */
 /* Page d'erreur                                                      */
 /* ------------------------------------------------------------------ */

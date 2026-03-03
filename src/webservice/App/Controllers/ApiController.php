@@ -8,6 +8,7 @@ use App\Exceptions\ApiException;
 use App\Repositories\GameConfigRepository;
 use App\Repositories\SaveRepository;
 use App\Services\FarmService;
+use App\Services\WeatherService;
 use CPE\Framework\AbstractApplication;
 use CPE\Framework\AbstractController;
 
@@ -20,14 +21,17 @@ use CPE\Framework\AbstractController;
 class ApiController extends AbstractController
 {
     protected FarmService $farm;
+    protected WeatherService $weather;
 
     public function __construct(AbstractApplication $app)
     {
         parent::__construct($app);
 
+        $this->weather = new WeatherService();
         $this->farm = new FarmService(
             new GameConfigRepository(DATA_PATH . '/Config/game_config.json'),
-            new SaveRepository(DATA_PATH . '/Saves')
+            new SaveRepository(DATA_PATH . '/Saves'),
+            $this->weather
         );
     }
 
@@ -38,6 +42,14 @@ class ApiController extends AbstractController
     {
         header('Content-Type: application/json; charset=utf-8');
         readfile(DATA_PATH . '/Config/game_config.json');
+    }
+
+    /**
+     * GET /api/weather
+     */
+    public function weather()
+    {
+        $this->respond(fn () => $this->weather->current());
     }
 
     /**
