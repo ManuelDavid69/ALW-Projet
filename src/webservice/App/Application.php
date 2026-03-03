@@ -32,6 +32,9 @@ class Application extends AbstractApplication
         $this->router->map('PUT', '/api/players/{string:player}/generators/{string:generator}', ApiController::class, 'updateGenerator');
         $this->router->map('POST', '/api/players/{string:player}/buildings/{string:building}/harvest', ApiController::class, 'harvest');
         $this->router->map('POST', '/api/players/{string:player}/buildings/{string:building}/upgrade', ApiController::class, 'upgrade');
+        $this->router->map('GET', '/api/events', ApiController::class, 'listEvents');
+        $this->router->map('POST', '/api/events', ApiController::class, 'publishEvent');
+        $this->router->map('GET', '/api/events/stream', ApiController::class, 'streamEvents');
 
         $route = $this->router->findRoute();
         $controller = $this->router->getController($route->controller);

@@ -489,6 +489,91 @@ button:disabled {
 }
 
 /* ------------------------------------------------------------------ */
+/* Fil d'événements (SSE)                                             */
+/* ------------------------------------------------------------------ */
+
+#live-status {
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+}
+
+.live-dot {
+    width: .5rem;
+    height: .5rem;
+    border-radius: 50%;
+    background: var(--muted);
+}
+
+#live-status.online .live-dot {
+    background: var(--green);
+    box-shadow: 0 0 0 3px #4af62622;
+}
+
+#live-status.offline .live-dot {
+    background: #ff6b6b;
+}
+
+.live-feed {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    max-height: 18rem;
+    overflow-y: auto;
+}
+
+.live-event {
+    display: flex;
+    align-items: baseline;
+    gap: .65rem;
+    padding: .55rem .7rem;
+    background: var(--panel-soft);
+    border: 1px solid #ffffff10;
+    border-radius: .55rem;
+}
+
+.live-event .event-time {
+    color: var(--muted);
+    font-size: .75rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.live-event .event-type {
+    padding: .15rem .4rem;
+    border-radius: 999px;
+    background: #0bbbef1a;
+    color: var(--blue);
+    font-size: .65rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    white-space: nowrap;
+}
+
+.live-event[data-type="upgrade"] .event-type {
+    background: #b35a1f22;
+    color: #e09a63;
+}
+
+.live-event[data-type="world"] .event-type {
+    background: #4af62615;
+    color: var(--green);
+}
+
+.live-event .event-message {
+    font-size: .88rem;
+}
+
+.live-empty {
+    color: var(--muted);
+    font-size: .88rem;
+    font-style: italic;
+}
+
+/* ------------------------------------------------------------------ */
 /* Page d'erreur                                                      */
 /* ------------------------------------------------------------------ */
 

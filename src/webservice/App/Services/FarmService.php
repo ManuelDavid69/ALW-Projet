@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Exceptions\ApiException;
+use App\Repositories\EventRepository;
 use App\Repositories\GameConfigRepository;
 use App\Repositories\SaveRepository;
 
@@ -20,7 +21,8 @@ class FarmService
     public function __construct(
         private GameConfigRepository $config,
         private SaveRepository $saves,
-        private WeatherService $weather
+        private WeatherService $weather,
+        private EventRepository $events
     ) {
     }
 
@@ -155,16 +157,34 @@ class FarmService
 
         $level = max(1, (int) ($save['buildings'][$buildingId]['level'] ?? 1));
         $baseQuantity = $this->config->getHarvestYield($buildingId, $level);
+        $quantity = max(1, (int) round($baseQuantity * $modifier));
+        $product = $this->config->getProduct($productId);
+
+        $event = $this->events->publish([
+            'type' => 'harvest',
+            'player' => $player,
+            'building' => $buildingId,
+            'product' => $productId,
+            'quantity' => $quantity,
+            'message' => sprintf(
+                '%s a récolté %d %s au %s.',
+                $player,
+                $quantity,
+                $product['unit'] ?? $productId,
+                $building['name']
+            ),
+        ]);
 
         return [
             'building' => $buildingId,
             'product' => $productId,
             'baseQuantity' => $baseQuantity,
             'modifier' => $modifier,
-            'quantity' => max(1, (int) round($baseQuantity * $modifier)),
+            'quantity' => $quantity,
             'level' => $level,
             'inventory' => $save['inventory'],
             'buildings' => $save['buildings'],
+            'event' => $event,
         ];
     }
 
@@ -177,7 +197,7 @@ class FarmService
      */
     public function upgrade(string $player, string $buildingId): array
     {
-        $this->requireBuilding($buildingId);
+        $building = $this->requireBuilding($buildingId);
         $this->requireSave($player);
 
         $save = $this->saves->mutate($player, function (array $save) use ($buildingId): array {
@@ -210,11 +230,22 @@ class FarmService
             return $save;
         });
 
+        $newLevel = (int) $save['buildings'][$buildingId]['level'];
+
+        $event = $this->events->publish([
+            'type' => 'upgrade',
+            'player' => $player,
+            'building' => $buildingId,
+            'level' => $newLevel,
+            'message' => sprintf('%s a amélioré %s au niveau %d.', $player, $building['name'], $newLevel),
+        ]);
+
         return [
             'building' => $buildingId,
-            'level' => (int) $save['buildings'][$buildingId]['level'],
+            'level' => $newLevel,
             'inventory' => $save['inventory'],
             'buildings' => $save['buildings'],
+            'event' => $event,
         ];
     }
 

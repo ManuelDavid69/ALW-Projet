@@ -89,6 +89,19 @@
                 {% endfor %}
             </div>
         </section>
+
+        <section class="panel" id="live">
+            <header>
+                <h2>Fil de la ferme</h2>
+                <span class="hint" id="live-status">
+                    <span class="live-dot" aria-hidden="true"></span>
+                    <span class="live-label">Connexion…</span>
+                </span>
+            </header>
+            <ul id="live-feed" class="live-feed">
+                <li class="live-empty">En attente d'événements…</li>
+            </ul>
+        </section>
     </main>
 
     <script>

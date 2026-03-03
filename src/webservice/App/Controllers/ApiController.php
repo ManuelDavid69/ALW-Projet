@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Exceptions\ApiException;
+use App\Repositories\EventRepository;
 use App\Repositories\GameConfigRepository;
 use App\Repositories\SaveRepository;
 use App\Services\FarmService;
@@ -22,16 +23,19 @@ class ApiController extends AbstractController
 {
     protected FarmService $farm;
     protected WeatherService $weather;
+    protected EventRepository $events;
 
     public function __construct(AbstractApplication $app)
     {
         parent::__construct($app);
 
         $this->weather = new WeatherService();
+        $this->events = new EventRepository();
         $this->farm = new FarmService(
             new GameConfigRepository(DATA_PATH . '/Config/game_config.json'),
             new SaveRepository(DATA_PATH . '/Saves'),
-            $this->weather
+            $this->weather,
+            $this->events
         );
     }
 
@@ -146,6 +150,104 @@ class ApiController extends AbstractController
         $this->respond(fn () => $this->farm->upgrade($this->player(), $this->param('building')));
     }
 
+    /**
+     * GET /api/events
+     */
+    public function listEvents()
+    {
+        $this->respond(function () {
+            $after = max(0, (int) ($_GET['after'] ?? 0));
+            $limit = min(100, max(1, (int) ($_GET['limit'] ?? 50)));
+
+            return [
+                'events' => $this->events->recent($after, $limit),
+                'latestId' => $this->events->latestId(),
+            ];
+        });
+    }
+
+    /**
+     * POST /api/events
+     */
+    public function publishEvent()
+    {
+        $this->respond(function () {
+            $body = $this->body();
+            $message = trim((string) ($body['message'] ?? ''));
+            if ($message === '') {
+                throw new ApiException('Le champ "message" est obligatoire.', 400);
+            }
+
+            $type = preg_replace('/[^a-z0-9_-]/i', '', (string) ($body['type'] ?? 'world'));
+            $type = $type !== '' ? $type : 'world';
+
+            return $this->events->publish([
+                'type' => $type,
+                'player' => isset($body['player']) ? (string) $body['player'] : null,
+                'message' => $message,
+            ]);
+        }, 201);
+    }
+
+    /**
+     * GET /api/events/stream — flux Server-Sent Events.
+     */
+    public function streamEvents()
+    {
+        $after = max(0, (int) ($_GET['after'] ?? 0));
+
+        ignore_user_abort(false);
+        set_time_limit(0);
+
+        while (ob_get_level() > 0) {
+            ob_end_flush();
+        }
+
+        header('Content-Type: text/event-stream; charset=utf-8');
+        header('Cache-Control: no-cache, no-transform');
+        header('Connection: keep-alive');
+        header('Content-Encoding: identity');
+        header('X-Accel-Buffering: no');
+
+        echo "retry: 5000\n\n";
+        echo ": flux ouvert\n\n";
+        @ob_flush();
+        flush();
+
+        $lastMtime = -1;
+        $lastPing = time();
+
+        while (!connection_aborted()) {
+            clearstatcache(true, $this->events->path());
+            $mtime = @filemtime($this->events->path());
+
+            if ($mtime !== false && $mtime !== $lastMtime) {
+                $lastMtime = $mtime;
+
+                foreach ($this->events->recent($after) as $event) {
+                    $after = max($after, (int) $event['id']);
+                    echo 'id: ' . $event['id'] . "\n";
+                    echo "event: farm\n";
+                    echo 'data: ' . json_encode($event, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . "\n\n";
+                }
+
+                @ob_flush();
+                flush();
+            }
+
+            // Un commentaire périodique permet de détecter la fermeture de la
+            // connexion et d'empêcher les proxys de couper un flux silencieux.
+            if (time() - $lastPing >= 10) {
+                echo ": ping\n\n";
+                @ob_flush();
+                flush();
+                $lastPing = time();
+            }
+
+            usleep(500000);
+        }
+    }
+
     protected function player(): string
     {
         return (string) ($this->parameters['player'] ?? '');
@@ -183,10 +285,10 @@ class ApiController extends AbstractController
     /**
      * Exécute une action et traduit ses erreurs en réponses JSON.
      */
-    protected function respond(callable $action): void
+    protected function respond(callable $action, int $status = 200): void
     {
         try {
-            $this->json($action());
+            $this->json($action(), $status);
         } catch (ApiException $exception) {
             $this->json(['error' => $exception->getMessage()], $exception->status());
         } catch (\Throwable $exception) {

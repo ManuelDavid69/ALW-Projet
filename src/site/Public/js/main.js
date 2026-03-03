@@ -95,11 +95,107 @@
         }
     }
 
+    /**
+     * Ajoute un événement en tête du fil et limite la liste aux 20 derniers.
+     */
+    function appendLiveEvent(event) {
+        const feed = document.querySelector('#live-feed');
+        if (!feed) {
+            return;
+        }
+
+        const item = document.createElement('li');
+        item.className = 'live-event';
+        item.dataset.type = event.type || 'world';
+
+        const time = document.createElement('span');
+        time.className = 'event-time';
+        const date = event.timestamp ? new Date(event.timestamp) : new Date();
+        time.textContent = Number.isNaN(date.getTime())
+            ? '--:--:--'
+            : date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        const type = document.createElement('span');
+        type.className = 'event-type';
+        type.textContent = event.type || 'info';
+
+        const message = document.createElement('span');
+        message.className = 'event-message';
+        message.textContent = event.message || '';
+
+        item.append(time, type, message);
+        feed.prepend(item);
+
+        const empty = feed.querySelector('.live-empty');
+        if (empty) {
+            empty.remove();
+        }
+
+        while (feed.children.length > 20) {
+            feed.lastElementChild.remove();
+        }
+    }
+
+    function setLiveStatus(online, label) {
+        const status = document.querySelector('#live-status');
+        if (!status) {
+            return;
+        }
+
+        status.classList.toggle('online', online);
+        status.classList.toggle('offline', !online);
+        const labelElement = status.querySelector('.live-label');
+        if (labelElement) {
+            labelElement.textContent = label;
+        }
+    }
+
+    /**
+     * Ouvre le flux SSE du webservice. Chaque événement rafraîchit les stocks,
+     * ce qui donne un suivi de production en direct.
+     */
+    function connectLiveFeed() {
+        const feed = document.querySelector('#live-feed');
+        if (!feed) {
+            return;
+        }
+
+        if (new URLSearchParams(window.location.search).get('live') === '0') {
+            setLiveStatus(false, 'Flux désactivé');
+            return;
+        }
+
+        const source = new EventSource(`${apiBaseUrl}/api/events/stream?after=0`);
+
+        source.addEventListener('open', () => setLiveStatus(true, 'En direct'));
+        source.addEventListener('farm', (message) => {
+            try {
+                const event = JSON.parse(message.data);
+                appendLiveEvent(event);
+
+                // Le flux est la source de vérité : on relit l'état complet
+                // pour refléter aussi les actions des autres joueurs.
+                engine.refresh().catch((error) => console.error(error));
+            } catch (error) {
+                console.error('Événement illisible', error);
+            }
+        });
+        source.onerror = () => setLiveStatus(false, 'Reconnexion…');
+
+        window.addEventListener('beforeunload', () => source.close());
+    }
+
     // Exposé pour le débogage dans la console du navigateur.
     window.fermeEngine = engine;
 
     engine.start()
-        .then(loadWeather)
+        .then(async () => {
+            // On charge la météo avant d'ouvrir le flux SSE : avec le serveur
+            // intégré de PHP (mono-processus), une connexion SSE bloque les
+            // autres requêtes.
+            await loadWeather();
+            connectLiveFeed();
+        })
         .catch((error) => {
             console.error(error);
             engine.setStatus(error.message || 'Impossible de charger la ferme.', true);
