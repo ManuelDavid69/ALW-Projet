@@ -21,13 +21,18 @@ class AuthController extends AbstractController
     {
         // Un joueur déjà connecté n'a rien à faire sur le formulaire.
         if (isset($_SESSION['player']['login'])) {
-            header('Location: /dashboard');
+            header('Location: /dashboard', true, 303);
             exit;
         }
 
+        // Le message d'erreur est conservé le temps d'une redirection (PRG).
+        $error = $_SESSION['login_error'] ?? null;
+        $lastLogin = (string) ($_SESSION['login_last'] ?? '');
+        unset($_SESSION['login_error'], $_SESSION['login_last']);
+
         echo $this->app->twig()->render('login.html.twig', [
-            'error' => null,
-            'lastLogin' => '',
+            'error' => $error,
+            'lastLogin' => $lastLogin,
         ]);
     }
 
@@ -55,11 +60,13 @@ class AuthController extends AbstractController
         }
 
         if ($error !== null) {
-            echo $this->app->twig()->render('login.html.twig', [
-                'error' => $error,
-                'lastLogin' => $login,
-            ]);
-            return;
+            // Post/Redirect/Get : on redirige en GET vers le formulaire, et le
+            // message voyage dans la session (flash) pour ne pas être perdu.
+            $_SESSION['login_error'] = $error;
+            $_SESSION['login_last'] = $login;
+
+            header('Location: /login', true, 303);
+            exit;
         }
 
         // Nouvel identifiant de session après authentification pour éviter
@@ -71,7 +78,7 @@ class AuthController extends AbstractController
         $saves = new SaveRepository(DATA_PATH . '/Saves');
         $saves->ensure($user->login, $config);
 
-        header('Location: /dashboard');
+        header('Location: /dashboard', true, 303);
         exit;
     }
 
@@ -97,7 +104,7 @@ class AuthController extends AbstractController
 
         session_destroy();
 
-        header('Location: /login');
+        header('Location: /login', true, 303);
         exit;
     }
 }
