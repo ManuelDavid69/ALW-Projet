@@ -24,3 +24,20 @@ services:
       - ./src/webservice:/var/www/html
       - ./src/Data:/var/www/html/Data
     # user: "root:www-data"
+
+  # Serveur WebSocket optionnel (troisième partie). Il n'est pas démarré par
+  # défaut : docker compose --profile websocket up -d
+  websocket:
+    container_name: websocket
+    build:
+      context: .
+      dockerfile: conf/websocket/Dockerfile
+    profiles: ["websocket"]
+    restart: on-failure
+    ports:
+      - 50200:50200
+    environment:
+      FEED_PATH: /app/Data/Events/feed.json
+      WS_PORT: 50200
+    volumes:
+      - ./src/Data:/app/Data

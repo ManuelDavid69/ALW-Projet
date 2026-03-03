@@ -1,0 +1,9 @@
+{
+  "name": "manueldavid69/alw-ferme-websocket",
+  "description": "Serveur WebSocket de suivi temps réel pour le projet ALW.",
+  "type": "project",
+  "require": {
+    "php": ">=8.1",
+    "workerman/workerman": "^5.1"
+  }
+}

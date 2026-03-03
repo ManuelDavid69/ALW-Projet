@@ -151,6 +151,43 @@
     }
 
     /**
+     * Ouvre un flux WebSocket (Workerman) à la place du flux SSE.
+     * Activation : ?live=ws ou window.FERME_WS_URL = 'ws://...'.
+     */
+    function connectWebSocket() {
+        const wsUrl = window.FERME_WS_URL || `ws://${window.location.hostname}:50200`;
+        let socket;
+
+        try {
+            socket = new WebSocket(wsUrl);
+        } catch (error) {
+            console.error(error);
+            setLiveStatus(false, 'WebSocket indisponible');
+            return;
+        }
+
+        socket.addEventListener('open', () => setLiveStatus(true, 'WebSocket'));
+        socket.addEventListener('message', (message) => {
+            try {
+                const event = JSON.parse(message.data);
+                if (event.type === 'welcome') {
+                    setLiveStatus(true, 'WebSocket');
+                    return;
+                }
+
+                appendLiveEvent(event);
+                engine.refresh().catch((error) => console.error(error));
+            } catch (error) {
+                console.error('Message WebSocket illisible', error);
+            }
+        });
+        socket.addEventListener('close', () => setLiveStatus(false, 'WebSocket fermé'));
+        socket.addEventListener('error', () => setLiveStatus(false, 'WebSocket indisponible'));
+
+        window.addEventListener('beforeunload', () => socket.close());
+    }
+
+    /**
      * Ouvre le flux SSE du webservice. Chaque événement rafraîchit les stocks,
      * ce qui donne un suivi de production en direct.
      */
@@ -160,8 +197,14 @@
             return;
         }
 
-        if (new URLSearchParams(window.location.search).get('live') === '0') {
+        const mode = new URLSearchParams(window.location.search).get('live');
+        if (mode === '0') {
             setLiveStatus(false, 'Flux désactivé');
+            return;
+        }
+
+        if (mode === 'ws' || window.FERME_WS_URL) {
+            connectWebSocket();
             return;
         }
 
