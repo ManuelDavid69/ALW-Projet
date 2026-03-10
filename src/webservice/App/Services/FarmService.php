@@ -167,7 +167,7 @@ class FarmService
             'product' => $productId,
             'quantity' => $quantity,
             'message' => sprintf(
-                '%s a récolté %d %s au %s.',
+                '%s a récolté %d %s au bâtiment %s.',
                 $player,
                 $quantity,
                 $quantity > 1
@@ -239,7 +239,7 @@ class FarmService
             'player' => $player,
             'building' => $buildingId,
             'level' => $newLevel,
-            'message' => sprintf('%s a amélioré %s au niveau %d.', $player, $building['name'], $newLevel),
+            'message' => sprintf('%s a amélioré le bâtiment %s au niveau %d.', $player, $building['name'], $newLevel),
         ]);
 
         return [
