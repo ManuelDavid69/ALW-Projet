@@ -170,7 +170,9 @@ class FarmService
                 '%s a récolté %d %s au %s.',
                 $player,
                 $quantity,
-                $product['unit'] ?? $productId,
+                $quantity > 1
+                    ? ($product['unit'] ?? $productId)
+                    : ($product['unitSingular'] ?? $product['unit'] ?? $productId),
                 $building['name']
             ),
         ]);

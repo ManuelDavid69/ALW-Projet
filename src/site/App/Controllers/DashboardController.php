@@ -57,19 +57,25 @@ class DashboardController extends AbstractController
                 }
             }
 
+            $yield = $config->getHarvestYield($buildingId, $level);
+            $produced = $products[$building['produces']];
+            $yieldUnit = $yield > 1
+                ? $produced['unit']
+                : ($produced['unitSingular'] ?? $produced['unit']);
+
             $buildingViews[] = [
                 'id' => $buildingId,
                 'name' => $building['name'],
                 'icon' => $building['icon'],
                 'description' => $building['description'],
-                'produces' => $products[$building['produces']],
+                'produces' => $produced,
                 'level' => $level,
-                'yield' => $config->getHarvestYield($buildingId, $level),
+                'yield' => $yield,
+                'yieldUnit' => $yieldUnit,
                 'cost' => $cost,
                 'costParts' => $costParts,
                 'canAfford' => $canAfford,
-            ];
-        }
+            ];        }
 
         echo $this->app->twig()->render('dashboard.html.twig', [
             'login' => $login,

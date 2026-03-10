@@ -3,22 +3,26 @@
     "ble": {
       "name": "Blé",
       "icon": "🌾",
-      "unit": "gerbes"
+      "unit": "gerbes",
+      "unitSingular": "gerbe"
     },
     "lait": {
       "name": "Lait",
       "icon": "🥛",
-      "unit": "bouteilles"
+      "unit": "bouteilles",
+      "unitSingular": "bouteille"
     },
     "oeuf": {
       "name": "Œufs",
       "icon": "🥚",
-      "unit": "œufs"
+      "unit": "œufs",
+      "unitSingular": "œuf"
     },
     "laine": {
       "name": "Laine",
       "icon": "🧶",
-      "unit": "balles"
+      "unit": "balles",
+      "unitSingular": "balle"
     }
   },
   "buildings": {

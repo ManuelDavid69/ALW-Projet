@@ -100,6 +100,9 @@ class FermeEngine {
             const level = Math.max(1, Number(buildings[buildingId]?.level ?? 1));
             const produced = this.config.products[building.produces] || { name: building.produces, unit: '' };
             const yieldPerHarvest = Math.max(1, Number(building.baseYield ?? 1) + (level - 1) * Number(building.yieldPerLevel ?? 0));
+            const yieldUnit = yieldPerHarvest > 1
+                ? (produced.unit || '')
+                : (produced.unitSingular || produced.unit || '');
             const cost = this.upgradeCost(building, level);
             const canAfford = Object.entries(cost).every(([productId, quantity]) => {
                 return Number(inventory[productId] ?? 0) >= quantity;
@@ -111,7 +114,7 @@ class FermeEngine {
 
             const yieldElement = card.querySelector('.production strong');
             if (yieldElement) {
-                yieldElement.textContent = `${yieldPerHarvest} ${produced.unit}`.trim();
+                yieldElement.textContent = `${yieldPerHarvest} ${yieldUnit}`.trim();
             }
 
             const costElement = card.querySelector('output.cost');
@@ -134,6 +137,14 @@ class FermeEngine {
             if (harvestButton) {
                 harvestButton.disabled = false;
             }
+        }
+
+        const totalLevels = Object.values(buildings).reduce((sum, building) => {
+            return sum + Math.max(1, Number(building.level ?? 1));
+        }, 0);
+        const totalElement = document.getElementById('total-levels');
+        if (totalElement) {
+            totalElement.textContent = String(totalLevels);
         }
     }
 

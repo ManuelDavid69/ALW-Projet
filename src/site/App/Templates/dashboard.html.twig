@@ -13,7 +13,7 @@
             <dl class="stats">
                 <div><dt>Produits</dt><dd>{{ products|length }}</dd></div>
                 <div><dt>Bâtiments</dt><dd>{{ buildings|length }}</dd></div>
-                <div><dt>Niveaux</dt><dd>{{ totalLevel }}</dd></div>
+                <div><dt>Niveaux</dt><dd id="total-levels">{{ totalLevel }}</dd></div>
             </dl>
         </section>
 
@@ -74,7 +74,7 @@
                         <p class="description">{{ building.description }}</p>
 
                         <div class="production">
-                            Récolte : <strong>{{ building.yield }} {{ building.produces.unit }}</strong>
+                            Récolte : <strong>{{ building.yield }} {{ building.yieldUnit }}</strong>
                         </div>
 
                         <div class="actions">
