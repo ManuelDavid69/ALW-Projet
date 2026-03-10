@@ -99,7 +99,15 @@
                 </span>
             </header>
             <ul id="live-feed" class="live-feed">
-                <li class="live-empty">En attente d'événements…</li>
+                {% for event in events %}
+                    <li class="live-event" data-type="{{ event.type|default('world') }}">
+                        <span class="event-time">{{ event.time }}</span>
+                        <span class="event-type">{{ event.type|default('info') }}</span>
+                        <span class="event-message">{{ event.message }}</span>
+                    </li>
+                {% else %}
+                    <li class="live-empty">En attente d'événements…</li>
+                {% endfor %}
             </ul>
         </section>
     </main>

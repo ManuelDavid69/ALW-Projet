@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Repositories\EventRepository;
 use App\Repositories\GameConfigRepository;
 use App\Repositories\SaveRepository;
 use CPE\Framework\AbstractController;
@@ -25,6 +26,7 @@ class DashboardController extends AbstractController
         $login = (string) $_SESSION['player']['login'];
         $config = new GameConfigRepository(DATA_PATH . '/Config/game_config.json');
         $saves = new SaveRepository(DATA_PATH . '/Saves');
+        $eventRepository = new EventRepository();
 
         $products = $config->getProducts();
         $buildings = $config->getBuildings();
@@ -77,11 +79,19 @@ class DashboardController extends AbstractController
                 'canAfford' => $canAfford,
             ];        }
 
+        $recentEvents = array_reverse($eventRepository->recent(0, 10));
+        foreach ($recentEvents as &$recentEvent) {
+            $timestamp = strtotime((string) ($recentEvent['timestamp'] ?? 'now'));
+            $recentEvent['time'] = date('H:i:s', $timestamp !== false ? $timestamp : time());
+        }
+        unset($recentEvent);
+
         echo $this->app->twig()->render('dashboard.html.twig', [
             'login' => $login,
             'products' => $productViews,
             'buildings' => $buildingViews,
             'totalLevel' => $totalLevel,
+            'events' => $recentEvents,
         ]);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Application;
 
 ini_set('display_errors', 'On');
+date_default_timezone_set('Europe/Paris');
 
 /*
  * Les deux backends (site et webservice) partagent le même dossier de données.

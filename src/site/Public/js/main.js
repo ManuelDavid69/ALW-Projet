@@ -142,8 +142,8 @@
             return;
         }
 
-        status.classList.toggle('online', online);
-        status.classList.toggle('offline', !online);
+        status.classList.toggle('online', online === true);
+        status.classList.toggle('offline', online === false);
         const labelElement = status.querySelector('.live-label');
         if (labelElement) {
             labelElement.textContent = label;
@@ -199,7 +199,7 @@
 
         const mode = new URLSearchParams(window.location.search).get('live');
         if (mode === '0') {
-            setLiveStatus(false, 'Flux désactivé');
+            setLiveStatus(null, 'Flux désactivé');
             return;
         }
 

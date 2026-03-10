@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Application;
 
 ini_set('display_errors', 'On');
+date_default_timezone_set('Europe/Paris');
 
 // Même logique que côté site : le dossier Data est partagé entre les deux
 // backends (monté dans /var/www/html/Data par Docker).
