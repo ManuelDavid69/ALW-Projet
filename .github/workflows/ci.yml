@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, curl
+          coverage: none
+
+      - name: Lint PHP files
+        run: |
+          set -euo pipefail
+          find src ws tools -name '*.php' -not -path '*/Twig/*' -print0 | xargs -0 -n1 php -l
+
+      - name: Check the JavaScript files
+        run: |
+          node --check src/site/Public/js/FermeEngine.js
+          node --check src/site/Public/js/main.js
+
+      - name: Check the duplicated game config
+        run: diff -u src/Data/Config/game_config.json src/site/Public/js/game_config.json
+
+  smoke:
+    name: Smoke tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, curl
+          coverage: none
+
+      - name: Start the two backends
+        run: |
+          php -S 127.0.0.1:50180 -t src/site tools/router.php > /tmp/site.log 2>&1 &
+          php -S 127.0.0.1:50181 -t src/webservice tools/router.php > /tmp/api.log 2>&1 &
+          sleep 2
+          curl -fsS http://127.0.0.1:50180/login > /dev/null
+          curl -fsS http://127.0.0.1:50181/ > /dev/null
+
+      - name: Run the smoke tests
+        run: bash tests/smoke.sh
+
+      - name: Show the server logs on failure
+        if: failure()
+        run: |
+          echo '--- site ---'
+          cat /tmp/site.log
+          echo '--- api ---'
+          cat /tmp/api.log
