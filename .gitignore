@@ -16,8 +16,6 @@ desktop.ini
 # Journaux et caches
 *.log
 .phpunit.result.cache
-src/site/Twig/cache/
-src/webservice/Twig/cache/
 src/site/var/
 src/webservice/var/
 
