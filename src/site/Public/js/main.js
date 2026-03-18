@@ -199,7 +199,7 @@
 
         const mode = new URLSearchParams(window.location.search).get('live');
         if (mode === '0') {
-            setLiveStatus(null, 'Flux désactivé');
+            setLiveStatus(null, 'Historique');
             return;
         }
 
