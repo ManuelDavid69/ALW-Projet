@@ -2,6 +2,9 @@
 3IRC ALW 1 - sujet*.pdf
 sujet.txt
 
+# OpenChamber (captures et état local)
+.openchamber/
+
 # Systèmes d'exploitation
 .DS_Store
 Thumbs.db
