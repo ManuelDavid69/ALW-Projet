@@ -22,8 +22,10 @@ $uri = (string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 $requested = $appRoot . $uri;
 
 // Les fichiers réellement présents (CSS, JavaScript, images) sont servis
-// directement par le serveur intégré.
-if ($uri !== '/' && is_file($requested)) {
+// directement par le serveur intégré. Les dossiers privés restent inaccessibles,
+// comme avec les règles .htaccess d'Apache.
+$blocked = preg_match('#^/(App|Data|Framework|Twig)(/|$)#', $uri) === 1;
+if (!$blocked && $uri !== '/' && is_file($requested)) {
     return false;
 }
 
