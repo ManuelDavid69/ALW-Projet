@@ -214,17 +214,16 @@ class ApiController extends AbstractController
         @ob_flush();
         flush();
 
-        $lastMtime = -1;
         $lastPing = time();
 
         while (!connection_aborted()) {
-            clearstatcache(true, $this->events->path());
-            $mtime = @filemtime($this->events->path());
+            // Le journal est petit (100 événements maximum) : le relire à
+            // chaque tour évite de rater deux événements écrits dans la même
+            // seconde, ce que filemtime() ne distinguerait pas.
+            $newEvents = $this->events->recent($after);
 
-            if ($mtime !== false && $mtime !== $lastMtime) {
-                $lastMtime = $mtime;
-
-                foreach ($this->events->recent($after) as $event) {
+            if ($newEvents !== []) {
+                foreach ($newEvents as $event) {
                     $after = max($after, (int) $event['id']);
                     echo 'id: ' . $event['id'] . "\n";
                     echo "event: farm\n";

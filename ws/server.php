@@ -23,7 +23,6 @@ $worker = new Worker("websocket://0.0.0.0:$port");
 $worker->name = 'ferme-websocket';
 $worker->count = 1;
 
-$lastMtime = -1;
 $lastId = latestEventId($feedPath);
 
 $worker->onConnect = static function (TcpConnection $connection): void {
@@ -35,17 +34,11 @@ $worker->onConnect = static function (TcpConnection $connection): void {
 
 /**
  * Diffusion des événements ajoutés au journal par l'API (ou par un autre
- * client WebSocket).
+ * client WebSocket). Le fichier est relu à chaque tour : il est petit et cela
+ * évite de rater deux événements écrits dans la même seconde.
  */
-$worker->onWorkerStart = static function (Worker $worker) use ($feedPath, &$lastMtime, &$lastId): void {
-    Timer::add(0.5, static function () use ($worker, $feedPath, &$lastMtime, &$lastId): void {
-        clearstatcache(true, $feedPath);
-        $mtime = @filemtime($feedPath);
-        if ($mtime === false || $mtime === $lastMtime) {
-            return;
-        }
-
-        $lastMtime = $mtime;
+$worker->onWorkerStart = static function (Worker $worker) use ($feedPath, &$lastId): void {
+    Timer::add(0.5, static function () use ($worker, $feedPath, &$lastId): void {
         $state = readState($feedPath);
 
         foreach ($state['events'] as $event) {
@@ -67,7 +60,7 @@ $worker->onWorkerStart = static function (Worker $worker) use ($feedPath, &$last
  * Un client peut publier une brève, qui est enregistrée dans le journal puis
  * diffusée à tous les autres clients.
  */
-$worker->onMessage = static function (TcpConnection $connection, string $data) use ($worker, $feedPath): void {
+$worker->onMessage = static function (TcpConnection $connection, string $data) use ($feedPath): void {
     $payload = json_decode($data, true);
     $message = is_array($payload)
         ? trim((string) ($payload['message'] ?? ''))
@@ -78,11 +71,10 @@ $worker->onMessage = static function (TcpConnection $connection, string $data) u
         return;
     }
 
-    $event = publishEvent($feedPath, $message);
-
-    foreach ($worker->connections as $client) {
-        $client->send(json_encode($event, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
-    }
+    // Le message est ajouté au journal ; le poller le diffusera à tous les
+    // clients (y compris l'expéditeur) au prochain tour. Cela garantit l'ordre
+    // des événements et évite tout doublon.
+    publishEvent($feedPath, $message);
 };
 
 Worker::runAll();

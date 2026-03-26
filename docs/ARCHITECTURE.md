@@ -331,7 +331,8 @@ Le client ne peut donc pas choisir une météo favorable.
 - envoie `Content-Type: text/event-stream`, `Cache-Control: no-cache`,
   `Connection: keep-alive` et `Content-Encoding: identity` ;
 - écrit un commentaire d'ouverture puis les événements disponibles ;
-- surveille `filemtime()` du journal toutes les 500 ms ;
+- relit le journal toutes les 500 ms (100 événements maximum), ce qui évite de
+  rater deux événements écrits dans la même seconde ;
 - envoie `id:`, `event: farm` et `data: {...}` pour chaque nouvel événement ;
 - envoie un commentaire `: ping` toutes les dix secondes ;
 - s'arrête quand `connection_aborted()` détecte la fermeture du client.
