@@ -208,7 +208,8 @@
             return;
         }
 
-        const source = new EventSource(`${apiBaseUrl}/api/events/stream?after=0`);
+        const after = Number(window.FERME_AFTER_EVENT_ID || 0);
+        const source = new EventSource(`${apiBaseUrl}/api/events/stream?after=${encodeURIComponent(after)}`);
 
         source.addEventListener('open', () => setLiveStatus(true, 'En direct'));
         source.addEventListener('farm', (message) => {

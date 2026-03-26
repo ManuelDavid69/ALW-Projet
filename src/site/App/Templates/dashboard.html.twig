@@ -114,7 +114,8 @@
 
     <script>
         window.FERME_PLAYER = {{ player|json_encode|raw }};
+        window.FERME_AFTER_EVENT_ID = {{ latestEventId }};
     </script>
-    <script src="/Public/js/FermeEngine.js"></script>
-    <script src="/Public/js/main.js"></script>
+    <script src="/Public/js/FermeEngine.js?v=2"></script>
+    <script src="/Public/js/main.js?v=2"></script>
 {% endblock %}

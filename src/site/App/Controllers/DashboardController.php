@@ -92,6 +92,7 @@ class DashboardController extends AbstractController
             'buildings' => $buildingViews,
             'totalLevel' => $totalLevel,
             'events' => $recentEvents,
+            'latestEventId' => $eventRepository->latestId(),
         ]);
     }
 }
