@@ -18,6 +18,10 @@ approfondissements (CORS, PRG, météo, SSE, WebSocket).
 > [`yannick-joly/alw-projet`](https://github.com/yannick-joly/alw-projet).
 > **Implémentation, tests et documentation** : [ManuelDavid69](https://github.com/ManuelDavid69).
 
+> Le fragment `FermeEngine.js` et la maquette distribués sur e-campus n'étant pas
+> présents dans le dépôt du cours, le moteur visuel et l'interface du tableau de bord
+> ont été réécrits à partir des spécifications du sujet.
+
 ![Tableau de bord de la ferme](docs/dashboard.jpg)
 
 ---
